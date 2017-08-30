@@ -15,9 +15,9 @@ black = [0, 0, 0]
 
 SCREENSIZE = [800, 800]  # Size of our output display
 
-lines = []
+lines = [] # A list containing lines
 
-lengths = []
+lengths = [] # List contating length of lines and label locations
 
 running = True
 
@@ -31,11 +31,11 @@ class Draw_Lines:
 
         self.myfont = pygame.font.SysFont("arial", 25)
 
-        self.P1 = [0,0]
+        self.P1 = [0,0] # Place to store starting point of a line
 
-        self.P2 = [0,0]
+        self.P2 = [0,0] # Place to store ending point of a line
 
-        self.flag = False
+        self.flag = False #Flag used to check mouse condition while dragging lines
 
 
     def Run(self):
@@ -54,7 +54,19 @@ class Draw_Lines:
 
                 self.P2[:] = pygame.mouse.get_pos()
 
-                pygame.draw.line(self.screen, red, self.P1[:],  self.P2[:], 5)
+                if (-10 < (self.P2[0] - self.P1[0]) < 10) :
+
+                    self.P2[0] = self.P1[0]
+
+                if (-10 < (self.P2[1] - self.P1[1]) < 10) :
+
+                    self.P2[1] = self.P1[1]
+
+                pygame.draw.line(self.screen, red, self.P1[:],  self.P2[:], 3)
+
+                pygame.draw.circle(self.screen, red, [int(self.P1[0]), int(self.P1[1])], 10, 1)
+
+                pygame.draw.circle(self.screen, red, [int(self.P2[0]), int(self.P2[1])], 10, 1)
 
                 leng = np.linalg.norm(np.array(self.P1[:]) - np.array(self.P2[:]))
 
@@ -66,6 +78,14 @@ class Draw_Lines:
             elif (pygame.mouse.get_pressed()[0] == False) and (self.flag == True):
 
                 self.P2[:] = pygame.mouse.get_pos() 
+
+                if (-10 < (self.P2[0] - self.P1[0]) < 10) :
+
+                    self.P2[0] = self.P1[0]
+
+                if (-10 < (self.P2[1] - self.P1[1]) < 10) :
+
+                    self.P2[1] = self.P1[1]
 
                 lines.append(Lines(self.P1[:], self.P2[:], black))
 
@@ -100,6 +120,9 @@ class Lines:
 
     def draw(self,screen):
         pygame.draw.line(screen, self.color, self.p1,  self.p2, 3)
+        pygame.draw.circle(screen, self.color, [int(self.p1[0]), int(self.p1[1])], 10, 1)
+        pygame.draw.circle(screen, self.color, [int(self.p2[0]), int(self.p2[1])], 10, 1)
+
 
 
 class Lengths:
@@ -115,6 +138,7 @@ class Lengths:
         final_length = self.myfont.render(str("%.1f" % self.length), 1, black)
 
         screen.blit(final_length, self.location)
+
 
 
 
