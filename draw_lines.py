@@ -4,6 +4,8 @@ import matplotlib.lines as mlines
 
 from pygame.locals import *
 
+import numpy as np
+
 
 red = [255, 0, 0]
 green = [0, 255, 0]
@@ -14,6 +16,8 @@ black = [0, 0, 0]
 SCREENSIZE = [800, 800]  # Size of our output display
 
 lines = []
+
+lengths = []
 
 running = True
 
@@ -40,8 +44,6 @@ class Draw_Lines:
              
             self.screen.fill(white)
 
-
-
             if (pygame.mouse.get_pressed()[0]) and (self.flag == False):
 
                 self.P1[:] = pygame.mouse.get_pos()
@@ -54,6 +56,12 @@ class Draw_Lines:
 
                 pygame.draw.line(self.screen, red, self.P1[:],  self.P2[:], 5)
 
+                leng = np.linalg.norm(np.array(self.P1[:]) - np.array(self.P2[:]))
+
+                temp_length = self.myfont.render(str("%.1f" % leng), 1, red)
+
+                self.screen.blit(temp_length, self.P1[:])
+
 
             elif (pygame.mouse.get_pressed()[0] == False) and (self.flag == True):
 
@@ -61,11 +69,18 @@ class Draw_Lines:
 
                 lines.append(Lines(self.P1[:], self.P2[:], black))
 
-                self.flag = False
+                leng = np.linalg.norm(np.array(self.P1[:]) - np.array(self.P2[:]))
 
+                lengths.append(Lengths(leng, self.P1[:]))
+
+                self.flag = False
 
             for k in lines:
                 k.draw(self.screen)
+
+            for k in lengths:
+                k.draw(self.screen)
+
 
             pygame.display.update()
     
@@ -84,7 +99,22 @@ class Lines:
         self.color = color
 
     def draw(self,screen):
-        pygame.draw.line(screen, self.color, self.p1,  self.p2, 5)
+        pygame.draw.line(screen, self.color, self.p1,  self.p2, 3)
+
+
+class Lengths:
+
+    def __init__(self,length,location):
+
+        self.length = length
+        self.location = location
+        self.myfont = pygame.font.SysFont("arial", 25)
+
+    def draw(self,screen):
+
+        final_length = self.myfont.render(str("%.1f" % self.length), 1, black)
+
+        screen.blit(final_length, self.location)
 
 
 
