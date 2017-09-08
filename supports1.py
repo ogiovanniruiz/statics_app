@@ -10,6 +10,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
+ORANGE = (255, 102, 0)
 
 
 #screen 
@@ -45,7 +46,8 @@ class Support():
 		self.height = height
 		self.color = color
 		self.support = support
-
+		self.mouse = pygame.mouse.get_pos()
+		
 	def draw(self):
 
 		if self.support == "fixed":
@@ -58,10 +60,37 @@ class Support():
 			pygame.draw.polygon(display, self.color, 
 								((self.x,self.y),(self.x-15,self.y+20), 
 								(self.x+15,self.y+20)))
-			#pygame.draw.circle(display, self.color, (self.x, self.y), self.radius)
 			pygame.draw.circle(display, self.color, (self.x, self.y+25), 5)
 			pygame.draw.circle(display, self.color, (self.x+10, self.y+25), 5)
 			pygame.draw.circle(display, self.color, (self.x-10, self.y+25), 5)
+
+	def check(self, click=0):
+
+		mX,mY = pygame.mouse.get_pos()
+
+		if (self.x <= mX <= self.x+30) and (self.y <= mY <= self.y+15) and self.support == "fixed":
+			pygame.draw.rect(display, ORANGE, [self.x, self.y, 30, 15])
+		if (self.x <= mX <= self.x+30) and (self.y <= mY <= self.y+15) and self.support == "fixed" and click == 1:
+			fixed_supports.remove(self)
+
+
+		if (self.x-15 <= mX <= self.x+30) and (self.y <= mY <= self.y+20) and self.support == "pinned":
+			pygame.draw.polygon(display, ORANGE, 
+								((self.x,self.y),(self.x-15,self.y+20), 
+								(self.x+15,self.y+20)))
+		if (self.x-15 <= mX <= self.x+30) and (self.y <= mY <= self.y+20) and self.support == "pinned" and click == 1:
+			pinned_supports.remove(self)
+
+
+		if (self.x-15 <= mX <= self.x+30) and (self.y <= mY <= self.y+30) and self.support == "roller":
+			pygame.draw.polygon(display, ORANGE, 
+								((self.x,self.y),(self.x-15,self.y+20), 
+								(self.x+15,self.y+20)))
+			pygame.draw.circle(display, ORANGE, (self.x, self.y+25), 5)
+			pygame.draw.circle(display, ORANGE, (self.x+10, self.y+25), 5)
+			pygame.draw.circle(display, ORANGE, (self.x-10, self.y+25), 5)
+		if (self.x-15 <= mX <= self.x+30) and (self.y <= mY <= self.y+30) and self.support == "roller" and click == 1:
+			roller_supports.remove(self)
 
 while programRun:
 
@@ -83,6 +112,9 @@ while programRun:
 			if event.key == pygame.K_r:
 				print("roller selected")
 				support_type = "roller"
+			if event.key == pygame.K_BACKSPACE:
+				print("delete selected")
+				support_type = "delete"
 
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			z = 1
@@ -93,7 +125,7 @@ while programRun:
 		pygame.draw.rect(display, RED, [x, y, 30, 15])
 	if z == 1 and support_type == "fixed":
 		fixed_supports.append(Support(y, x, RED, support_type, 30, 15))
-		z = 4
+		z = 5
 
 	if support_type == "pinned":
 		pygame.draw.polygon(display, BLUE, ((x,y),(x-15,y+20), (x+15,y+20)))
@@ -122,6 +154,18 @@ while programRun:
 	for i in roller_supports:
 		i.draw()
 
-	#clock.tick(60)
+	if support_type == "delete":
+		for i in fixed_supports:
+			i.check(z)
+
+	if support_type == "delete":
+		for i in pinned_supports:
+			i.check(z)
+
+	if support_type == "delete":
+		for i in roller_supports:
+			i.check(z)
+
+	clock.tick(60)
 
 	pygame.display.update()
