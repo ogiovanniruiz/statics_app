@@ -408,8 +408,8 @@ class Lines():
 
                 self.input_D = int(inputbox.ask(screen, 'Scale this to'))
 
-                self.p2[0] = (self.p2[0] - self.p1[0] )* (self.input_D / self.length) + self.p1[0]
-                self.p2[1] = (self.p2[1] - self.p1[1] )* (self.input_D / self.length) + self.p1[1]
+                self.p2[0] = (self.p2[0] - self.p1[0] )* (self.input_D / self.dim) + self.p1[0]
+                self.p2[1] = (self.p2[1] - self.p1[1] )* (self.input_D / self.dim) + self.p1[1]
 
                 self.flag_D = False
 
@@ -423,8 +423,8 @@ class Lines():
 
                 self.input_E = int(inputbox.ask(screen, 'Scale this to'))
 
-                self.p1[0] = (self.p1[0] - self.p2[0] )* (self.input_E / self.length) + self.p2[0]
-                self.p1[1] = (self.p1[1] - self.p2[1] )* (self.input_E / self.length) + self.p2[1]
+                self.p1[0] = (self.p1[0] - self.p2[0] )* (self.input_E / self.dim) + self.p2[0]
+                self.p1[1] = (self.p1[1] - self.p2[1] )* (self.input_E / self.dim) + self.p2[1]
 
                 self.flag_E = False
 
