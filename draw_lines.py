@@ -323,6 +323,9 @@ class Lines():
         self.flag_B = False
         self.flag_C = False
 
+        self.flag_D = False
+        self.flag_E = False
+
         self.input = 0
 
     def draw(self,screen):
@@ -353,28 +356,80 @@ class Lines():
             pygame.draw.circle(screen, red, [int(self.p2[0]), int(self.p2[1])], 5, 5)
 
             if (dist_A < 6) and (pygame.mouse.get_pressed()[0]):
+
                 self.flag_A = True
+
             elif (dist_B < 6) and (pygame.mouse.get_pressed()[0]):
+
                 self.flag_B = True
+
             elif (round(dist_A + dist_B) == round(self.length)) and (pygame.mouse.get_pressed()[0]):
+
                 self.flag_C = True
+
+
+            elif (dist_A < 6) and (pygame.mouse.get_pressed()[2]):
+
+                self.flag_D = True
+
+            elif (dist_B < 6) and (pygame.mouse.get_pressed()[2]):
+
+                self.flag_E = True
+
             elif (pygame.mouse.get_pressed()[0]) == False:
+
                 self.flag_A = False
                 self.flag_B = False
 
         if self.flag_A:
+
             self.p1 = mouse
+
+
         elif self.flag_B:
+
             self.p2 = mouse
+
         elif self.flag_C:
+
             try:
-                self.input = int(inputbox.ask(screen, 'Scale to'))
+                self.input = int(inputbox.ask(screen, 'Scale all to'))
 
                 global scale
                 scale = self.input/self.length
                 self.flag_C = False
 
             except ValueError:
+                print "Not a number"
+
+        elif self.flag_D:
+
+            try:
+
+                self.input_D = int(inputbox.ask(screen, 'Scale this to'))
+
+                self.p2[0] = (self.p2[0] - self.p1[0] )* (self.input_D / self.length) + self.p1[0]
+                self.p2[1] = (self.p2[1] - self.p1[1] )* (self.input_D / self.length) + self.p1[1]
+
+                self.flag_D = False
+
+            except ValueError:
+
+                print "Not a number"
+
+        elif self.flag_E:
+
+            try:
+
+                self.input_E = int(inputbox.ask(screen, 'Scale this to'))
+
+                self.p1[0] = (self.p1[0] - self.p2[0] )* (self.input_E / self.length) + self.p2[0]
+                self.p1[1] = (self.p1[1] - self.p2[1] )* (self.input_E / self.length) + self.p2[1]
+
+                self.flag_E = False
+
+            except ValueError:
+
                 print "Not a number"
 
 class Support():
