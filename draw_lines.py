@@ -1,9 +1,5 @@
 import pygame
 
-import matplotlib.lines as mlines
-
-from pygame.locals import *
-
 import numpy as np
 
 import inputbox
@@ -18,21 +14,21 @@ ORANGE = (255, 102, 0)
 
 SCREENSIZE = [800, 800]  # Size of our output display
 
-lines = [] # A list containing lines
+lines = []  # A list containing lines
+
+forces = []
 
 running = True
 
 scale = 1
+
+scale_forces = 1
 
 supportRun = True
 
 fixed_supports = []
 pinned_supports = []
 roller_supports = []
-
-#support_type = "none"
-
-#z = 0
 
 clock = pygame.time.Clock()
 
@@ -46,23 +42,22 @@ class Main:
 
         self.myfont = pygame.font.SysFont("arial", 15)
 
-        self.P1 = [0,0] # Place to store starting point of a line
+        self.P1 = [0, 0]  # Place to store starting point of a line
 
-        self.P2 = [0,0] # Place to store ending point of a line
+        self.P2 = [0, 0]  # Place to store ending point of a line
 
-        self.flag = False #Flag used to check mouse condition while dragging lines
-
+        self.flag = False  # Flag used to check mouse condition while dragging lines
 
     def main_thread(self):
 
-        while(running):
+        while running:
              
             self.screen.fill(white)
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT: #check if close button has been pressed
-                        pygame.quit() #quits pygame
-                        quit() #quits   
+                if event.type == pygame.QUIT:  # check if close button has been pressed
+                        pygame.quit()  # quits pygame
+                        quit()  # quits
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_b:
                         print "Beams"
@@ -73,8 +68,14 @@ class Main:
                     elif event.key == pygame.K_s:
                         print "Supports"
                         self.support(self.screen)
+                    elif event.key == pygame.K_f:
+                        print "Forces"
+                        self.forces_thread()
 
             for k in lines:
+                k.draw(self.screen)
+
+            for k in forces:
                 k.draw(self.screen)
 
             for i in fixed_supports:
@@ -99,14 +100,16 @@ class Main:
                 self.screen.fill(white)
 
                 for event in pygame.event.get():   
-                    if event.type == pygame.QUIT: #check if close button has been pressed
-                        pygame.quit() #quits pygame
-                        quit() #quits
+                    if event.type == pygame.QUIT:  # check if close button has been pressed
+                        pygame.quit()  # quits pygame
+                        quit()  # quits
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_m:
-                            draw = False
                             print "Main"
                             self.main_thread()
+                        elif event.key == pygame.K_f:
+                            print "Forces"
+                            self.forces_thread()
                         elif event.key == pygame.K_d:
                             print "Dimensions"
                             self.dimension()
@@ -119,9 +122,9 @@ class Main:
                     self.flag = True
                 elif (pygame.mouse.get_pressed()[0]) and (self.flag == True):
                     self.P2[:] = pygame.mouse.get_pos()
-                    if (-10 < (self.P2[0] - self.P1[0]) < 10) :
+                    if -10 < (self.P2[0] - self.P1[0]) < 10:
                         self.P2[0] = self.P1[0]
-                    if (-10 < (self.P2[1] - self.P1[1]) < 10) :
+                    if -10 < (self.P2[1] - self.P1[1]) < 10:
                         self.P2[1] = self.P1[1]
 
                     pygame.draw.line(self.screen, red, self.P1[:],  self.P2[:], 3)
@@ -135,9 +138,9 @@ class Main:
 
                 elif (pygame.mouse.get_pressed()[0] == False) and (self.flag == True):
                     self.P2[:] = pygame.mouse.get_pos() 
-                    if (-10 < (self.P2[0] - self.P1[0]) < 10) :
+                    if -10 < (self.P2[0] - self.P1[0]) < 10 :
                         self.P2[0] = self.P1[0]
-                    if (-10 < (self.P2[1] - self.P1[1]) < 10) :
+                    if -10 < (self.P2[1] - self.P1[1]) < 10 :
                         self.P2[1] = self.P1[1]
 
                     lines.append(Lines(self.P1[:], self.P2[:], black))
@@ -145,6 +148,9 @@ class Main:
                     self.flag = False
 
                 for k in lines:
+                    k.draw(self.screen)
+
+                for k in forces:
                     k.draw(self.screen)
 
                 for i in fixed_supports:
@@ -160,6 +166,83 @@ class Main:
     
                 pygame.event.clear()
 
+    def forces_thread(self):
+
+        draw = True
+
+        while draw:
+
+            self.screen.fill(white)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # check if close button has been pressed
+                    pygame.quit()  # quits pygame
+                    quit()  # quits
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_m:
+                        print "Main"
+                        self.main_thread()
+                    elif event.key == pygame.K_f:
+                        print "Main"
+                        self.forces_thread()
+                    elif event.key == pygame.K_d:
+                        print "Dimensions"
+                        self.dimension()
+                    elif event.key == pygame.K_s:
+                        print "Supports"
+                        self.support(self.screen)
+                    elif event.key == pygame.K_b:
+                        print "Beams"
+                        self.support(self.screen)
+
+            if (pygame.mouse.get_pressed()[0]) and (self.flag == False):
+                self.P1[:] = pygame.mouse.get_pos()
+                self.flag = True
+            elif (pygame.mouse.get_pressed()[0]) and (self.flag == True):
+                self.P2[:] = pygame.mouse.get_pos()
+                if -10 < (self.P2[0] - self.P1[0]) < 10:
+                    self.P2[0] = self.P1[0]
+                if -10 < (self.P2[1] - self.P1[1]) < 10:
+                    self.P2[1] = self.P1[1]
+
+                pygame.draw.line(self.screen, blue, self.P1[:], self.P2[:], 3)
+                pygame.draw.circle(self.screen, blue, [int(self.P1[0]), int(self.P1[1])], 5, 5)
+                pygame.draw.circle(self.screen, blue, [int(self.P2[0]), int(self.P2[1])], 5, 5)
+                length = np.linalg.norm(np.array(self.P1[:]) - np.array(self.P2[:]))
+                dim = scale_forces * length
+                temp_length = self.myfont.render(str("%.1f" % dim), 1, red)
+
+                self.screen.blit(temp_length, self.P1[:])
+
+            elif (pygame.mouse.get_pressed()[0] == False) and (self.flag == True):
+                self.P2[:] = pygame.mouse.get_pos()
+                if -10 < (self.P2[0] - self.P1[0]) < 10:
+                    self.P2[0] = self.P1[0]
+                if -10 < (self.P2[1] - self.P1[1]) < 10:
+                    self.P2[1] = self.P1[1]
+
+                forces.append(Forces(self.P1[:], self.P2[:], blue))
+
+                self.flag = False
+
+            for k in lines:
+                k.draw(self.screen)
+
+            for k in forces:
+                k.draw(self.screen)
+
+            for i in fixed_supports:
+                i.draw_support(self.screen)
+
+            for i in pinned_supports:
+                i.draw_support(self.screen)
+
+            for i in roller_supports:
+                i.draw_support(self.screen)
+
+            pygame.display.update()
+
+            pygame.event.clear()
 
     def support(self, screen):
 
@@ -167,7 +250,7 @@ class Main:
 
         support_type = "none"
 
-        z=0
+        z = 0
         
         while supportRun:
 
@@ -176,9 +259,9 @@ class Main:
             x,y = pygame.mouse.get_pos()
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT: #check if close button has been pressed
-                    pygame.quit() #quits pygame
-                    quit() #quits
+                if event.type == pygame.QUIT:  # check if close button has been pressed
+                    pygame.quit()  # quits pygame
+                    quit()  # quits
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_b:
                         print "Beams"
@@ -186,6 +269,10 @@ class Main:
                     elif event.key == pygame.K_d:
                         print "Dimensions"
                         self.dimension()
+
+                    elif event.key == pygame.K_f:
+                        print "Forces"
+                        self.forces_thread()
 
                     if event.key == pygame.K_f:
                         print("fixed selected")
@@ -232,6 +319,9 @@ class Main:
             for k in lines:
                 k.draw(self.screen)
 
+            for k in forces:
+                k.draw(self.screen)
+
             for i in fixed_supports:
                 i.draw_support(display)
 
@@ -265,14 +355,12 @@ class Main:
 
             global scale
 
-            #print scale
-
             self.screen.fill(white)
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT: #check if close button has been pressed
-                        pygame.quit() #quits pygame
-                        quit() #quits   
+                if event.type == pygame.QUIT:  # check if close button has been pressed
+                        pygame.quit()  # quits pygame
+                        quit()  # quits
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_m:
                         print "Main"
@@ -282,12 +370,20 @@ class Main:
                         dimension = False
                         print "Beams"
                         self.draw_thread()
+
+                    elif event.key == pygame.K_f:
+                        dimension = False
+                        print "Forces"
+                        self.forces_thread()
                     elif event.key == pygame.K_s:
                         dimension = False
                         print "Supports"
                         self.support(self.screen)
 
             for k in lines:
+                k.draw(self.screen)
+
+            for k in forces:
                 k.draw(self.screen)
 
             for k in lines:
@@ -306,13 +402,14 @@ class Main:
     
             pygame.event.clear()
 
-class Lines():
+
+class Lines:
 
     p1 = 0
     p2 = 0
-    color = [0,0,0]
+    color = [0, 0, 0]
 
-    def __init__(self,p1,p2, color):
+    def __init__(self, p1, p2, color):
 
         self.p1 = p1
         self.p2 = p2
@@ -328,7 +425,7 @@ class Lines():
 
         self.input = 0
 
-    def draw(self,screen):
+    def draw(self, screen):
 
         self.length = np.linalg.norm(np.array(self.p1) - np.array(self.p2))
 
@@ -342,7 +439,7 @@ class Lines():
 
         screen.blit(final_length, self.p1)
 
-    def rescale(self,screen):
+    def rescale(self, screen):
 
         mouse = pygame.mouse.get_pos()
 
@@ -351,7 +448,8 @@ class Lines():
         dist_B = np.linalg.norm(mouse - np.array(self.p2))
 
         if (round(dist_A + dist_B) == round(self.length)) or ((dist_A < 6) or (dist_B < 6)):
-            pygame.draw.line(screen, red, (self.p1), (self.p2), 3)
+
+            pygame.draw.line(screen, red, self.p1, self.p2, 3)
             pygame.draw.circle(screen, red, [int(self.p1[0]), int(self.p1[1])], 5, 5)
             pygame.draw.circle(screen, red, [int(self.p2[0]), int(self.p2[1])], 5, 5)
 
@@ -384,7 +482,6 @@ class Lines():
         if self.flag_A:
 
             self.p1 = mouse
-
 
         elif self.flag_B:
 
@@ -432,7 +529,7 @@ class Lines():
 
                 print "Not a number"
 
-class Support():
+class Support:
 
     def __init__(self, y, x, color, support, width=0, height=0):
         
@@ -473,24 +570,155 @@ class Support():
         if (self.x <= mX <= self.x+30) and (self.y <= mY <= self.y+15) and self.support == "fixed" and click == 1:
             fixed_supports.remove(self)
 
-
         if (self.x-15 <= mX <= self.x+30) and (self.y <= mY <= self.y+20) and self.support == "pinned":
+
             pygame.draw.polygon(display, ORANGE, 
-                                ((self.x,self.y),(self.x-15,self.y+20), 
-                                (self.x+15,self.y+20)))
+                                ((self.x, self.y), (self.x-15, self.y+20),
+                                (self.x+15, self.y+20)))
+
         if (self.x-15 <= mX <= self.x+30) and (self.y <= mY <= self.y+20) and self.support == "pinned" and click == 1:
+
             pinned_supports.remove(self)
 
-
         if (self.x-15 <= mX <= self.x+30) and (self.y <= mY <= self.y+30) and self.support == "roller":
+
             pygame.draw.polygon(display, ORANGE, 
                                 ((self.x,self.y),(self.x-15,self.y+20), 
                                 (self.x+15,self.y+20)))
             pygame.draw.circle(display, ORANGE, (self.x, self.y+25), 5)
             pygame.draw.circle(display, ORANGE, (self.x+10, self.y+25), 5)
             pygame.draw.circle(display, ORANGE, (self.x-10, self.y+25), 5)
+
         if (self.x-15 <= mX <= self.x+30) and (self.y <= mY <= self.y+30) and self.support == "roller" and click == 1:
             roller_supports.remove(self)
+
+
+class Forces:
+
+    p1 = 0
+    p2 = 0
+    color = [0, 0, 0]
+
+    def __init__(self, p1, p2, color):
+
+        self.p1 = p1
+        self.p2 = p2
+        self.color = color
+        self.myfont = pygame.font.SysFont("arial", 15)
+
+        self.flag_A = False
+        self.flag_B = False
+        self.flag_C = False
+
+        self.flag_D = False
+        self.flag_E = False
+
+        self.input = 0
+
+    def draw(self, screen):
+
+        self.length = np.linalg.norm(np.array(self.p1) - np.array(self.p2))
+
+        self.dim = scale_forces*self.length
+
+        pygame.draw.line(screen, self.color, self.p1,  self.p2, 3)
+        pygame.draw.circle(screen, self.color, [int(self.p1[0]), int(self.p1[1])], 5, 5)
+        pygame.draw.circle(screen, self.color, [int(self.p2[0]), int(self.p2[1])], 5, 5)
+
+        final_length = self.myfont.render(str("%.1f" % self.dim), 1, black)
+
+        screen.blit(final_length, self.p1)
+
+    def rescale(self, screen):
+
+        mouse = pygame.mouse.get_pos()
+
+        dist_A = np.linalg.norm(mouse - np.array(self.p1))
+
+        dist_B = np.linalg.norm(mouse - np.array(self.p2))
+
+        if (round(dist_A + dist_B) == round(self.length)) or ((dist_A < 6) or (dist_B < 6)):
+
+            pygame.draw.line(screen, blue, self.p1, self.p2, 3)
+            pygame.draw.circle(screen, blue, [int(self.p1[0]), int(self.p1[1])], 5, 5)
+            pygame.draw.circle(screen, blue, [int(self.p2[0]), int(self.p2[1])], 5, 5)
+
+            if (dist_A < 6) and (pygame.mouse.get_pressed()[0]):
+
+                self.flag_A = True
+
+            elif (dist_B < 6) and (pygame.mouse.get_pressed()[0]):
+
+                self.flag_B = True
+
+            elif (round(dist_A + dist_B) == round(self.length)) and (pygame.mouse.get_pressed()[0]):
+
+                self.flag_C = True
+
+
+            elif (dist_A < 6) and (pygame.mouse.get_pressed()[2]):
+
+                self.flag_D = True
+
+            elif (dist_B < 6) and (pygame.mouse.get_pressed()[2]):
+
+                self.flag_E = True
+
+            elif (pygame.mouse.get_pressed()[0]) == False:
+
+                self.flag_A = False
+                self.flag_B = False
+
+        if self.flag_A:
+
+            self.p1 = mouse
+
+        elif self.flag_B:
+
+            self.p2 = mouse
+
+        elif self.flag_C:
+
+            try:
+                self.input = int(inputbox.ask(screen, 'Scale all to'))
+
+                global scale_forces
+                scale_forces = self.input/self.length
+                self.flag_C = False
+
+            except ValueError:
+                print "Not a number"
+
+        elif self.flag_D:
+
+            try:
+
+                self.input_D = int(inputbox.ask(screen, 'Scale this to'))
+
+                self.p2[0] = (self.p2[0] - self.p1[0] )* (self.input_D / self.dim) + self.p1[0]
+                self.p2[1] = (self.p2[1] - self.p1[1] )* (self.input_D / self.dim) + self.p1[1]
+
+                self.flag_D = False
+
+            except ValueError:
+
+                print "Not a number"
+
+        elif self.flag_E:
+
+            try:
+
+                self.input_E = int(inputbox.ask(screen, 'Scale this to'))
+
+                self.p1[0] = (self.p1[0] - self.p2[0] )* (self.input_E / self.dim) + self.p2[0]
+                self.p1[1] = (self.p1[1] - self.p2[1] )* (self.input_E / self.dim) + self.p2[1]
+
+                self.flag_E = False
+
+            except ValueError:
+
+                print "Not a number"
+
 
 if __name__ == '__main__':
     
