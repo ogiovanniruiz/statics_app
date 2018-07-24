@@ -1,11 +1,5 @@
 import pygame
 
-import numpy as np
-
-import math
-
-import inputbox
-
 # ======================================================================================================================
 #  The ModeSelect Class accepts input from the user
 

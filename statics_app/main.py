@@ -1,22 +1,10 @@
-import pygame
-
-import numpy as np
-
-import math
-
-import inputbox
-
-from screen import *
+from screen import Screen
 
 from draw_lines import *
 
 from lines import *
 
 from mode_select import *
-
-#beams = []  # A list containing lines
-
-#forces = []  # A List containing force vectors
 
 # ======================================================================================================================
 if __name__ == '__main__':
@@ -51,7 +39,3 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print (" SHUTTING DOWN APP...")
         pygame.quit()
-
-# =======================================================================================================================
-# =======================================================================================================================
-# =======================================================================================================================

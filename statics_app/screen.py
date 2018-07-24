@@ -1,11 +1,5 @@
 import pygame
 
-import numpy as np
-
-import math
-
-import inputbox
-
 SCREENSIZE = [800, 800]  # Size of our output display
 
 red = [255, 0, 0]
@@ -19,6 +13,7 @@ mode_pos = [100, 100]
 
 # ======================================================================================================================
 # The Screen Class sets up the pygame environment
+
 
 class Screen:
     def __init__(self):

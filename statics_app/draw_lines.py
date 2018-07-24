@@ -1,11 +1,3 @@
-import pygame
-
-import numpy as np
-
-import math
-
-import inputbox
-
 from main import *
 
 red = [255, 0, 0]
@@ -142,7 +134,6 @@ class DrawLines:
 
         for k in forces:
             k.permanent_draw(screen, font)
-
 
         for k in forces:
             k.draw_triangles(screen)
